@@ -301,8 +301,9 @@ async function loadForms() {
 async function showPage(page, payload) {
   const app = document.getElementById('app');
 
-  // Show spinner while loading forms on first visit
-  if (state.loading && page !== 'builder') {
+  // If forms haven't been loaded yet — show spinner and load first.
+  // This applies to ALL pages, including 'builder' when editing an existing form.
+  if (state.loading) {
     app.innerHTML = `
       <div class="page">
         <div class="container">
@@ -475,6 +476,30 @@ function pageAdmin() {
    ============================================================== */
 function pageBuilder(editId) {
   const existing = editId ? state.forms[editId] : null;
+
+  // אם יש editId אבל הטופס לא נמצא ב-state — הצג שגיאה ידידותית
+  if (editId && !existing) {
+    const wrap = div('page'), c = div('container');
+    wrap.appendChild(c);
+    c.innerHTML = `
+      <div class="page-header">
+        <h2><i class="fas fa-wand-magic-sparkles" style="color:var(--orange)"></i> עריכת טופס</h2>
+        <button class="btn btn-ghost btn-sm" onclick="showPage('admin')">
+          <i class="fas fa-arrow-right"></i> חזור
+        </button>
+      </div>
+      <div class="empty-state">
+        <span class="empty-icon">🔄</span>
+        <h3>הטופס לא נמצא בזיכרון</h3>
+        <p>לוחץ "רענן" כדי לטעון מחדש מ-Google Sheets</p>
+        <button class="btn btn-primary" style="margin-top:20px"
+          onclick="loadForms().then(()=>showPage('builder','${editId}'))">
+          <i class="fas fa-rotate-right"></i> רענן וטען טופס
+        </button>
+      </div>`;
+    return wrap;
+  }
+
   const formData = existing ? JSON.parse(JSON.stringify(existing)) : {
     id: uid(), title: '', description: '',
     questions: [], eventMode: false, maxParticipants: '', closed: false
