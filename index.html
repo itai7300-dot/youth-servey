@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>פורמלי – טפסים ואירועים</title>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --orange:#FF6B35; --coral:#FF8C69; --yellow:#FFD166; --pink:#FF85A1;
+      --soft-bg:#FFF8F3; --white:#FFFFFF; --dark:#1A1A2E; --mid:#4A4A6A;
+      --card-shadow:0 8px 32px rgba(255,107,53,0.12);
+      --radius:18px; --transition:0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Heebo',sans-serif;background:var(--soft-bg);color:var(--dark);min-height:100vh;overflow-x:hidden;direction:rtl}
+    body::before{content:'';position:fixed;width:600px;height:600px;background:radial-gradient(circle,rgba(255,209,102,.25) 0%,transparent 70%);top:-200px;left:-200px;border-radius:50%;pointer-events:none;animation:blobMove 12s ease-in-out infinite alternate;z-index:0}
+    body::after{content:'';position:fixed;width:500px;height:500px;background:radial-gradient(circle,rgba(255,133,161,.2) 0%,transparent 70%);bottom:-150px;right:-150px;border-radius:50%;pointer-events:none;animation:blobMove 15s ease-in-out infinite alternate-reverse;z-index:0}
+    @keyframes blobMove{from{transform:translate(0,0) scale(1)}to{transform:translate(60px,40px) scale(1.1)}}
+    .hidden{display:none!important}
+    .container{max-width:860px;margin:0 auto;padding:0 18px}
+    /* Nav */
+    .topnav{background:rgba(255,255,255,.85);backdrop-filter:blur(14px);border-bottom:2px solid rgba(255,107,53,.12);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+    .topnav .logo{font-size:1.5rem;font-weight:900;background:linear-gradient(135deg,var(--orange),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-1px}
+    .topnav .logo span{font-weight:300}
+    .nav-actions{display:flex;gap:10px;align-items:center}
+    /* Buttons */
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:50px;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:.95rem;font-weight:700;transition:var(--transition);text-decoration:none;white-space:nowrap}
+    .btn-primary{background:linear-gradient(135deg,var(--orange),var(--coral));color:#fff;box-shadow:0 4px 16px rgba(255,107,53,.35)}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,107,53,.45)}
+    .btn-secondary{background:var(--white);color:var(--orange);border:2px solid var(--orange)}
+    .btn-secondary:hover{background:var(--orange);color:#fff;transform:translateY(-2px)}
+    .btn-ghost{background:transparent;color:var(--mid);border:2px solid transparent}
+    .btn-ghost:hover{background:rgba(255,107,53,.08);color:var(--orange)}
+    .btn-danger{background:#ffe5e5;color:#e05050;border:2px solid #ffbcbc}
+    .btn-danger:hover{background:#e05050;color:#fff}
+    .btn-sm{padding:7px 16px;font-size:.85rem}
+    .btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+    /* Pages */
+    .page{position:relative;z-index:1;padding:36px 0 80px;animation:fadeUp .45s var(--transition)}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+    /* Hero */
+    .hero{text-align:center;padding:60px 20px 40px}
+    .hero-emoji{font-size:4rem;display:block;margin-bottom:16px;animation:bounce 2s ease-in-out infinite}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    .hero h1{font-size:clamp(2rem,6vw,3.5rem);font-weight:900;line-height:1.1;margin-bottom:16px;background:linear-gradient(135deg,var(--dark) 0%,var(--orange) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero p{font-size:1.1rem;color:var(--mid);max-width:500px;margin:0 auto 32px;line-height:1.7}
+    .hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+    /* Cards */
+    .card{background:var(--white);border-radius:var(--radius);box-shadow:var(--card-shadow);padding:28px;transition:var(--transition);border:1.5px solid rgba(255,107,53,.07)}
+    .card:hover{box-shadow:0 12px 40px rgba(255,107,53,.18)}
+    .card-grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));margin-top:28px}
+    .form-card{cursor:pointer;position:relative;overflow:hidden}
+    .form-card::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;background:linear-gradient(135deg,var(--yellow),var(--coral));border-radius:0 var(--radius) 0 80px;opacity:.18;transition:var(--transition)}
+    .form-card:hover::before{opacity:.35}
+    .form-card h3{font-size:1.1rem;font-weight:800;margin-bottom:6px;color:var(--dark)}
+    .form-card .meta{font-size:.82rem;color:var(--mid);display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:700}
+    .badge-green{background:rgba(70,200,120,.12);color:#2d9c5d}
+    .badge-red{background:rgba(220,50,50,.12);color:#c03030}
+    .badge-yellow{background:rgba(255,209,102,.25);color:#b88a00}
+    /* Page header */
+    .page-header{display:flex;align-items:center;gap:16px;margin-bottom:28px;flex-wrap:wrap}
+    .page-header h2{font-size:1.7rem;font-weight:900;flex:1}
+    .section-title{font-size:1.1rem;font-weight:800;color:var(--orange);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+    /* Builder */
+    .builder-meta{display:grid;gap:14px;grid-template-columns:1fr 1fr;margin-bottom:24px}
+    @media(max-width:560px){.builder-meta{grid-template-columns:1fr}}
+    .field-group{display:flex;flex-direction:column;gap:6px}
+    .field-group label{font-size:.88rem;font-weight:700;color:var(--mid)}
+    .field-group input,.field-group textarea,.field-group select{border:2px solid rgba(255,107,53,.18);border-radius:12px;padding:11px 14px;font-family:'Heebo',sans-serif;font-size:.96rem;color:var(--dark);background:var(--white);transition:var(--transition);direction:rtl;width:100%}
+    .field-group input:focus,.field-group textarea:focus,.field-group select:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 4px rgba(255,107,53,.12)}
+    .field-group textarea{min-height:80px;resize:vertical}
+    /* Questions */
+    .questions-list{display:flex;flex-direction:column;gap:16px}
+    .question-item{background:rgba(255,209,102,.07);border:2px solid rgba(255,209,102,.3);border-radius:var(--radius);padding:18px;position:relative}
+    .question-item .q-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+    .q-number{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--orange),var(--coral));color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;flex-shrink:0}
+    .q-type-badge{font-size:.78rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(255,107,53,.1);color:var(--orange)}
+    .q-actions{margin-right:auto;margin-left:0;display:flex;gap:6px}
+    .options-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+    .option-row{display:flex;align-items:center;gap:8px}
+    .option-row input{flex:1}
+    .option-row .btn-icon{width:32px;height:32px;border-radius:50%;border:none;background:rgba(220,50,50,.1);color:#e05050;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:var(--transition);flex-shrink:0}
+    .option-row .btn-icon:hover{background:#e05050;color:#fff}
+    .add-question-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:14px;background:rgba(255,107,53,.04);border:2px dashed rgba(255,107,53,.25);border-radius:var(--radius);margin-top:16px}
+    .add-question-bar select{flex:1;min-width:180px;border-radius:10px;border:2px solid rgba(255,107,53,.18);padding:9px 12px;font-family:'Heebo',sans-serif;font-size:.9rem;direction:rtl}
+    /* Event settings */
+    .event-settings{background:rgba(255,133,161,.07);border:2px solid rgba(255,133,161,.25);border-radius:var(--radius);padding:20px;margin-top:20px}
+    .toggle-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+    .toggle{position:relative;width:48px;height:26px;flex-shrink:0}
+    .toggle input{opacity:0;width:0;height:0}
+    .toggle-slider{position:absolute;inset:0;background:#ddd;border-radius:26px;cursor:pointer;transition:var(--transition)}
+    .toggle-slider::before{content:'';position:absolute;width:20px;height:20px;right:3px;top:3px;background:#fff;border-radius:50%;transition:var(--transition)}
+    .toggle input:checked+.toggle-slider{background:var(--orange)}
+    .toggle input:checked+.toggle-slider::before{transform:translateX(-22px)}
+    /* Fill form */
+    .form-fill-header{text-align:center;padding:32px 20px 24px}
+    .form-fill-header h1{font-size:clamp(1.5rem,5vw,2.4rem);font-weight:900;margin-bottom:10px}
+    .form-fill-header p{color:var(--mid);font-size:1rem;line-height:1.6}
+    .progress-bar-wrap{background:rgba(255,107,53,.1);border-radius:20px;height:8px;margin:20px 0 28px;overflow:hidden}
+    .progress-bar-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--orange),var(--yellow));transition:width .5s cubic-bezier(0.4,0,0.2,1)}
+    .progress-text{font-size:.8rem;color:var(--mid);text-align:center;margin-top:-20px;margin-bottom:24px;font-weight:700}
+    .fill-question{margin-bottom:26px}
+    .fill-question .q-label{font-size:1rem;font-weight:700;margin-bottom:12px;display:flex;align-items:flex-start;gap:8px}
+    .q-req{color:var(--orange);font-size:1rem}
+    .text-input,.textarea-input{width:100%;border:2px solid rgba(255,107,53,.18);border-radius:12px;padding:12px 14px;font-family:'Heebo',sans-serif;font-size:.96rem;direction:rtl;transition:var(--transition);color:var(--dark)}
+    .text-input:focus,.textarea-input:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 4px rgba(255,107,53,.12)}
+    .textarea-input{min-height:100px;resize:vertical}
+    .radio-options,.checkbox-options{display:flex;flex-direction:column;gap:10px}
+    .radio-option,.checkbox-option{display:flex;align-items:center;gap:12px;padding:12px 16px;border:2px solid rgba(255,107,53,.18);border-radius:12px;cursor:pointer;transition:var(--transition);font-size:.95rem}
+    .radio-option:hover,.checkbox-option:hover{border-color:var(--orange);background:rgba(255,107,53,.05)}
+    .radio-option.selected,.checkbox-option.selected{border-color:var(--orange);background:rgba(255,107,53,.1);font-weight:700}
+    .radio-option input,.checkbox-option input{display:none}
+    .custom-radio,.custom-check{width:20px;height:20px;border-radius:50%;border:2.5px solid #ccc;background:#fff;display:flex;align-items:center;justify-content:center;transition:var(--transition);flex-shrink:0}
+    .custom-check{border-radius:6px}
+    .radio-option.selected .custom-radio,.checkbox-option.selected .custom-check{border-color:var(--orange);background:var(--orange)}
+    .radio-option.selected .custom-radio::after{content:'';width:8px;height:8px;border-radius:50%;background:#fff}
+    .checkbox-option.selected .custom-check::after{content:'✓';color:#fff;font-size:.75rem;font-weight:900}
+    .yesno-options{display:flex;gap:14px}
+    .yesno-btn{flex:1;padding:14px;border:2.5px solid rgba(255,107,53,.18);border-radius:14px;background:#fff;cursor:pointer;font-family:'Heebo',sans-serif;font-size:1rem;font-weight:700;transition:var(--transition);display:flex;flex-direction:column;align-items:center;gap:6px}
+    .yesno-btn .yn-icon{font-size:1.6rem}
+    .yesno-btn:hover{border-color:var(--orange);background:rgba(255,107,53,.05)}
+    .yesno-btn.selected.yes{border-color:#46c878;background:rgba(70,200,120,.12);color:#2d9c5d}
+    .yesno-btn.selected.no{border-color:#e05050;background:rgba(220,80,80,.12);color:#c03030}
+    .select-input{width:100%;border:2px solid rgba(255,107,53,.18);border-radius:12px;padding:12px 14px;font-family:'Heebo',sans-serif;font-size:.96rem;direction:rtl;transition:var(--transition);color:var(--dark);background:#fff;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='8'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%23FF6B35' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 14px center}
+    .select-input:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 4px rgba(255,107,53,.12)}
+    /* Loading / spinner */
+    .full-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:40vh;gap:20px;text-align:center}
+    .spinner{width:52px;height:52px;border:5px solid rgba(255,107,53,.15);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .submit-loading{display:flex;flex-direction:column;align-items:center;gap:16px;padding:40px 20px;text-align:center}
+    .submit-loading p{font-weight:700;color:var(--mid);font-size:1rem}
+    /* Error banner */
+    .error-banner{background:linear-gradient(135deg,#ffe5e5,#fff0f0);border:2px solid #ffbcbc;border-radius:var(--radius);padding:20px 24px;display:flex;align-items:flex-start;gap:14px;margin-bottom:20px}
+    .error-banner .err-icon{font-size:1.8rem;flex-shrink:0}
+    .error-banner h4{color:#c03030;font-size:1rem;font-weight:800;margin-bottom:4px}
+    .error-banner p{color:#e05050;font-size:.88rem;line-height:1.5}
+    /* Thank you */
+    .thankyou-screen{text-align:center;padding:60px 20px}
+    .thankyou-screen .big-check{font-size:5rem;display:block;margin-bottom:20px;animation:popIn .6s cubic-bezier(0.34,1.56,0.64,1)}
+    @keyframes popIn{from{transform:scale(0) rotate(-20deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+    .confetti-wrapper{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;overflow:hidden}
+    .confetti-piece{position:absolute;width:10px;height:14px;top:-20px;animation:confettiFall linear forwards;border-radius:2px}
+    @keyframes confettiFall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+    /* Stats */
+    .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:28px}
+    .stat-card{background:var(--white);border-radius:var(--radius);padding:20px;text-align:center;box-shadow:var(--card-shadow);border:1.5px solid rgba(255,107,53,.07)}
+    .stat-card .stat-num{font-size:2.2rem;font-weight:900;background:linear-gradient(135deg,var(--orange),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .stat-card .stat-label{font-size:.8rem;color:var(--mid);font-weight:600;margin-top:4px}
+    /* Reg full */
+    .reg-full-banner{background:linear-gradient(135deg,#ffe5e5,#fff0f0);border:2px solid #ffbcbc;border-radius:var(--radius);padding:28px;text-align:center;margin-bottom:24px}
+    .reg-full-banner .banner-icon{font-size:3rem;display:block;margin-bottom:12px}
+    .reg-full-banner h2{color:#c03030;font-size:1.6rem;font-weight:900;margin-bottom:8px}
+    .reg-full-banner p{color:#e05050;font-size:.95rem}
+    /* Checkbox group */
+    .checkbox-group{display:flex;align-items:center;gap:10px;cursor:pointer}
+    .checkbox-group input[type=checkbox]{display:none}
+    .custom-check-box{width:20px;height:20px;border:2.5px solid #ccc;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;transition:var(--transition);flex-shrink:0}
+    .checkbox-group input:checked+.custom-check-box{background:var(--orange);border-color:var(--orange)}
+    .checkbox-group input:checked+.custom-check-box::after{content:'✓';color:#fff;font-size:.75rem;font-weight:900}
+    /* Share box */
+    .share-box{display:flex;align-items:center;gap:10px;background:rgba(255,107,53,.06);border:2px solid rgba(255,107,53,.2);border-radius:12px;padding:12px 14px}
+    .share-box input{flex:1;border:none;background:transparent;font-family:'Heebo',sans-serif;font-size:.88rem;direction:ltr;color:var(--mid)}
+    .share-box input:focus{outline:none}
+    /* Modal */
+    .modal-overlay{position:fixed;inset:0;background:rgba(26,26,46,.55);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    .modal{background:var(--white);border-radius:var(--radius);padding:28px;max-width:480px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.2);animation:slideUp .3s cubic-bezier(0.34,1.56,0.64,1)}
+    @keyframes slideUp{from{transform:translateY(40px) scale(.95);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+    .modal h3{font-size:1.2rem;font-weight:800;margin-bottom:16px}
+    .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+    /* Toast */
+    .toast{position:fixed;bottom:30px;right:50%;transform:translateX(50%);background:var(--dark);color:#fff;padding:12px 24px;border-radius:50px;font-size:.9rem;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.25);z-index:1000;animation:toastIn .3s cubic-bezier(0.34,1.56,0.64,1)}
+    @keyframes toastIn{from{opacity:0;transform:translateX(50%) translateY(20px)}to{opacity:1;transform:translateX(50%) translateY(0)}}
+    /* Empty */
+    .empty-state{text-align:center;padding:60px 20px;color:var(--mid)}
+    .empty-state .empty-icon{font-size:4rem;display:block;margin-bottom:16px;opacity:.4}
+    .empty-state h3{font-size:1.2rem;font-weight:800;margin-bottom:8px;color:var(--dark)}
+    .empty-state p{font-size:.92rem}
+    /* Notice */
+    .url-notice{background:rgba(255,209,102,.18);border:2px solid rgba(255,209,102,.5);border-radius:12px;padding:14px 18px;font-size:.85rem;color:#7a5c00;margin-bottom:24px;display:flex;gap:10px;align-items:flex-start}
+    .url-notice i{margin-top:2px;flex-shrink:0;color:#e09000}
+    @media(max-width:540px){.topnav{padding:12px 16px}.page{padding:24px 0 60px}.card{padding:20px}.hero{padding:40px 16px 28px}.stats-row{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="logo">פורמ<span>לי</span> 📋</div>
+  <div class="nav-actions">
+    <button class="btn btn-ghost btn-sm" onclick="showPage('home')"><i class="fas fa-home"></i> בית</button>
+    <button class="btn btn-primary btn-sm" onclick="requireAdmin(() => showPage('admin'))"><i class="fas fa-shield-halved"></i> ניהול</button>
+  </div>
+</nav>
+
+<main id="app"></main>
+<div class="confetti-wrapper" id="confettiWrapper"></div>
+
+<script>
+/* ==============================================================
+   ██████╗  ██████╗ ███╗   ██╗███████╗██╗ ██████╗
+   ██╔════╝ ██╔═══██╗████╗  ██║██╔════╝██║██╔════╝
+   ██║  ███╗██║   ██║██╔██╗ ██║█████╗  ██║██║  ███╗
+   ██║   ██║██║   ██║██║╚██╗██║██╔══╝  ██║██║   ██║
+   ╚██████╔╝╚██████╔╝██║ ╚████║██║     ██║╚██████╔╝
+    ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚═╝ ╚═════╝
+
+   ── https://script.google.com/macros/s/AKfycbzc5xT72kspEIaZz6U5myTThOyNxl5tN0jugQCpnpK4kuJZjDV6WXx_S4ymMrskKHF4/exec ──────────────────────────
+   After deploying apps-script.gs as a Web App, paste the URL:
+   ============================================================== */
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzc5xT72kspEIaZz6U5myTThOyNxl5tN0jugQCpnpK4kuJZjDV6WXx_S4ymMrskKHF4/exec';
+
+/* ==============================================================
+   CONFIG
+   ============================================================== */
+const ADMIN_PASSWORD = 'admin123'; // ← שנה סיסמא כאן
+
+/* ==============================================================
+   STATE
+   All form definitions are loaded from Google Sheets.
+   localStorage is used only as a fast cache so pages feel instant.
+   ============================================================== */
+let state = {
+  forms:     {},        // { [id]: formObj } — populated from Sheets on load
+  adminAuth: false,
+  loading:   true
+};
+
+// Cache helpers
+const cacheLoad = () => { try { return JSON.parse(localStorage.getItem('pf_forms_cache')) || {}; } catch { return {}; } };
+const cacheSave = forms => localStorage.setItem('pf_forms_cache', JSON.stringify(forms));
+
+/* ==============================================================
+   GOOGLE SHEETS API CALLS
+   ============================================================== */
+
+/** Check that the URL has been configured */
+function checkUrl() {
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+    throw new Error('כתובת ה-Apps Script לא הוגדרה. עדכן את APPS_SCRIPT_URL בקוד.');
+  }
+}
+
+/** GET request — fetch all forms from Sheets */
+async function apiFetchForms() {
+  checkUrl();
+  const res  = await fetch(APPS_SCRIPT_URL + '?action=getForms');
+  const data = await res.json();
+  if (!data.success) throw new Error(data.error || 'שגיאה בטעינת הטפסים');
+  return data.forms; // array
+}
+
+/** POST request */
+async function apiPost(body) {
+  checkUrl();
+  const res = await fetch(APPS_SCRIPT_URL, {
+    method:  'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body:    JSON.stringify(body)
+  });
+  let data;
+  try { data = await res.json(); } catch { data = { success: true }; }
+  if (data && data.error) throw new Error(data.error);
+  return data;
+}
+
+/** Load all forms — called on page load and after mutations */
+async function loadForms() {
+  // Show cached data immediately so the UI feels fast
+  state.forms = cacheLoad();
+  state.loading = true;
+  try {
+    const arr = await apiFetchForms();
+    state.forms = {};
+    arr.forEach(f => { state.forms[f.id] = f; });
+    cacheSave(state.forms);
+  } catch (err) {
+    console.warn('Could not load from Sheets, using cache:', err.message);
+    // Keep cache — still usable offline
+  }
+  state.loading = false;
+}
+
+/* ==============================================================
+   ROUTING
+   ============================================================== */
+async function showPage(page, payload) {
+  const app = document.getElementById('app');
+
+  // Show spinner while loading forms on first visit
+  if (state.loading && page !== 'builder') {
+    app.innerHTML = `
+      <div class="page">
+        <div class="container">
+          <div class="full-loading">
+            <div class="spinner"></div>
+            <p style="color:var(--mid);font-weight:700">טוען טפסים...</p>
+          </div>
+        </div>
+      </div>`;
+    await loadForms();
+  }
+
+  app.innerHTML = '';
+  app.appendChild(buildPage(page, payload));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+window.addEventListener('load', async () => {
+  const hash = location.hash.slice(1);
+  if (hash.startsWith('fill/')) await showPage('fill', hash.slice(5));
+  else await showPage('home');
+});
+
+/* ==============================================================
+   PAGE BUILDER
+   ============================================================== */
+function buildPage(page, payload) {
+  switch (page) {
+    case 'home':    return pageHome();
+    case 'admin':   return pageAdmin();
+    case 'builder': return pageBuilder(payload);
+    case 'fill':    return pageFill(payload);
+    default:        return pageHome();
+  }
+}
+
+/* ==============================================================
+   HOME PAGE
+   ============================================================== */
+function pageHome() {
+  const wrap = div('page'), c = div('container');
+  wrap.appendChild(c);
+  c.innerHTML = `
+    <div class="hero">
+      <span class="hero-emoji">🚀</span>
+      <h1>צור טפסים וסקרים<br>בדקייה אחת!</h1>
+      <p>פלטפורמה קלה ליצירת סקרים, אירועים ורישומים – בעברית, מותאם למובייל.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="requireAdmin(() => showPage('builder',null))">
+          <i class="fas fa-plus"></i> צור טופס חדש
+        </button>
+        <button class="btn btn-secondary" onclick="requireAdmin(() => showPage('admin'))">
+          <i class="fas fa-chart-bar"></i> לוח ניהול
+        </button>
+      </div>
+    </div>`;
+
+  const forms = Object.values(state.forms);
+  if (forms.length) {
+    const sec = div('');
+    sec.innerHTML = `<div class="section-title"><i class="fas fa-fire"></i> טפסים פעילים</div>`;
+    const grid = div('card-grid');
+    forms.slice(0, 6).forEach(f => {
+      const card = div('card form-card');
+      card.innerHTML = `
+        <h3>${esc(f.title)}</h3>
+        <div class="meta"><span><i class="fas fa-list-ul"></i> ${f.questions.length} שאלות</span></div>
+        ${f.closed
+          ? '<span class="badge badge-red"><i class="fas fa-lock"></i> סגור</span>'
+          : '<span class="badge badge-green"><i class="fas fa-circle-check"></i> פתוח</span>'}`;
+      card.onclick = () => showPage('fill', f.id);
+      grid.appendChild(card);
+    });
+    sec.appendChild(grid);
+    c.appendChild(sec);
+  } else {
+    c.innerHTML += `
+      <div class="empty-state">
+        <span class="empty-icon">📋</span>
+        <h3>אין טפסים פעילים עדיין</h3>
+        <p>היכנס לניהול כדי ליצור את הטופס הראשון</p>
+      </div>`;
+  }
+  return wrap;
+}
+
+/* ==============================================================
+   ADMIN PAGE
+   ============================================================== */
+function pageAdmin() {
+  const wrap = div('page'), c = div('container');
+  wrap.appendChild(c);
+  const forms = Object.values(state.forms);
+
+  c.innerHTML = `
+    <div class="page-header">
+      <h2><i class="fas fa-shield-halved" style="color:var(--orange)"></i> לוח ניהול</h2>
+      <button class="btn btn-primary btn-sm" onclick="showPage('builder',null)">
+        <i class="fas fa-plus"></i> טופס חדש
+      </button>
+      <button class="btn btn-ghost btn-sm" onclick="adminLogout()">
+        <i class="fas fa-right-from-bracket"></i> יציאה
+      </button>
+    </div>`;
+
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbzc5xT72kspEIaZz6U5myTThOyNxl5tN0jugQCpnpK4kuJZjDV6WXx_S4ymMrskKHF4/exec') {
+    const notice = div('url-notice');
+    notice.innerHTML = `<i class="fas fa-triangle-exclamation"></i>
+      <div><strong>Apps Script URL לא הוגדר.</strong> הטפסים לא יישמרו לכלל המשתמשים.</div>`;
+    c.appendChild(notice);
+  }
+
+  if (!forms.length) {
+    c.innerHTML += `
+      <div class="empty-state">
+        <span class="empty-icon">📋</span>
+        <h3>אין טפסים עדיין</h3>
+        <p>לחץ על "טופס חדש" כדי להתחיל</p>
+      </div>`;
+    return wrap;
+  }
+
+  const grid = div('card-grid');
+  forms.forEach(f => {
+    const shareUrl = `${location.origin}${location.pathname}#fill/${f.id}`;
+    const card = div('card');
+    card.style.cssText = 'display:flex;flex-direction:column;gap:10px;';
+    card.innerHTML = `
+      <div>
+        <h3 style="font-weight:800;margin-bottom:4px">${esc(f.title)}</h3>
+        <div class="meta">
+          <span><i class="fas fa-list-ul"></i> ${f.questions.length} שאלות</span>
+          ${f.eventMode ? '<span><i class="fas fa-calendar"></i> אירוע</span>' : ''}
+          ${f.closed
+            ? '<span class="badge badge-red"><i class="fas fa-lock"></i> סגור</span>'
+            : '<span class="badge badge-green"><i class="fas fa-circle-check"></i> פתוח</span>'}
+        </div>
+      </div>
+      <div class="share-box">
+        <input type="text" value="${shareUrl}" readonly id="link_${f.id}" />
+        <button class="btn btn-secondary btn-sm" onclick="copyLink('${f.id}')">
+          <i class="fas fa-copy"></i>
+        </button>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-secondary btn-sm" onclick="showPage('fill','${f.id}')">
+          <i class="fas fa-eye"></i> תצוגה
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="showPage('builder','${f.id}')">
+          <i class="fas fa-pen"></i> עריכה
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="adminToggleClose('${f.id}')">
+          ${f.closed ? '<i class="fas fa-lock-open"></i> פתח' : '<i class="fas fa-lock"></i> סגור'}
+        </button>
+        <button class="btn btn-danger btn-sm" onclick="adminDeleteForm('${f.id}')">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+      <div style="font-size:.8rem;color:var(--mid)">
+        <i class="fas fa-table-cells"></i> תשובות נשמרות ב-Google Sheets · גיליון <strong>${esc(f.id)}</strong>
+      </div>`;
+    grid.appendChild(card);
+  });
+  c.appendChild(grid);
+  return wrap;
+}
+
+/* ==============================================================
+   BUILDER PAGE
+   ============================================================== */
+function pageBuilder(editId) {
+  const existing = editId ? state.forms[editId] : null;
+  const formData = existing ? JSON.parse(JSON.stringify(existing)) : {
+    id: uid(), title: '', description: '',
+    questions: [], eventMode: false, maxParticipants: '', closed: false
+  };
+
+  const wrap = div('page'), c = div('container');
+  wrap.appendChild(c);
+
+  c.innerHTML = `
+    <div class="page-header">
+      <h2><i class="fas fa-wand-magic-sparkles" style="color:var(--orange)"></i>
+        ${existing ? 'עריכת טופס' : 'טופס חדש'}
+      </h2>
+      <button class="btn btn-ghost btn-sm" onclick="showPage('admin')">
+        <i class="fas fa-arrow-right"></i> חזור
+      </button>
+    </div>`;
+
+  // Meta card
+  const mc = div('card');
+  mc.innerHTML = `
+    <div class="section-title"><i class="fas fa-circle-info"></i> פרטי הטופס</div>
+    <div class="builder-meta">
+      <div class="field-group" style="grid-column:1/-1">
+        <label>כותרת הטופס *</label>
+        <input type="text" id="bTitle" placeholder="למשל: סקר כיתה ז׳1" value="${esc(formData.title)}" />
+      </div>
+      <div class="field-group" style="grid-column:1/-1">
+        <label>תיאור (אופציונלי)</label>
+        <textarea id="bDesc" placeholder="הסבר קצר על הטופס...">${esc(formData.description)}</textarea>
+      </div>
+    </div>`;
+  c.appendChild(mc);
+
+  // Event settings
+  const ec = div('card'); ec.style.marginTop = '18px';
+  ec.innerHTML = `
+    <div class="section-title"><i class="fas fa-calendar-star"></i> הגדרות אירוע</div>
+    <div class="event-settings">
+      <div class="toggle-row">
+        <label class="toggle">
+          <input type="checkbox" id="bEventMode" ${formData.eventMode ? 'checked' : ''} onchange="toggleEventFields()" />
+          <span class="toggle-slider"></span>
+        </label>
+        <span style="font-weight:700">מצב אירוע (הגבלת משתתפים)</span>
+      </div>
+      <div id="eventFields" style="${formData.eventMode ? '' : 'display:none'}">
+        <div class="field-group">
+          <label>מספר משתתפים מקסימלי</label>
+          <input type="number" id="bMaxP" min="1" value="${formData.maxParticipants || ''}" placeholder="למשל: 30" />
+        </div>
+      </div>
+    </div>`;
+  c.appendChild(ec);
+
+  // Questions card
+  const qc = div('card'); qc.style.marginTop = '18px';
+  qc.innerHTML = `<div class="section-title"><i class="fas fa-circle-question"></i> שאלות</div>`;
+  const qList = div('questions-list'); qList.id = 'questionsList';
+  qc.appendChild(qList);
+  const addBar = div('add-question-bar');
+  addBar.innerHTML = `
+    <select id="qTypeSelect">
+      <option value="text">טקסט קצר</option>
+      <option value="paragraph">פסקה</option>
+      <option value="multiple">בחירה מרובה</option>
+      <option value="yesno">כן / לא</option>
+      <option value="dropdown">רשימה נפתחת</option>
+    </select>
+    <button class="btn btn-primary btn-sm" onclick="addQuestion()">
+      <i class="fas fa-plus"></i> הוסף שאלה
+    </button>`;
+  qc.appendChild(addBar);
+  c.appendChild(qc);
+
+  // Save row
+  const sr = div(''); sr.style.cssText = 'margin-top:28px;display:flex;gap:12px;justify-content:flex-end';
+  sr.innerHTML = `
+    <button class="btn btn-ghost" onclick="showPage('admin')">ביטול</button>
+    <button class="btn btn-primary" id="saveBtn" onclick="saveFormToSheets('${formData.id}')">
+      <i class="fas fa-floppy-disk"></i> שמור טופס
+    </button>`;
+  c.appendChild(sr);
+
+  formData.questions.forEach((q, i) => renderQuestion(q, i));
+  window._builderForm = formData;
+  return wrap;
+}
+
+function toggleEventFields() {
+  document.getElementById('eventFields').style.display =
+    document.getElementById('bEventMode').checked ? '' : 'none';
+}
+
+function addQuestion() {
+  const type = document.getElementById('qTypeSelect').value;
+  const q = { id: uid(), type, label: '', required: false, options: [] };
+  if (['multiple','dropdown'].includes(type)) q.options = ['אפשרות 1', 'אפשרות 2'];
+  window._builderForm.questions.push(q);
+  renderQuestion(q, window._builderForm.questions.length - 1);
+  document.getElementById('questionsList').lastElementChild
+    ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function renderQuestion(q, idx) {
+  const list = document.getElementById('questionsList');
+  const item = div('question-item'); item.id = `qitem_${q.id}`;
+  const typeLabel = { text:'טקסט קצר', paragraph:'פסקה', multiple:'בחירה מרובה', yesno:'כן/לא', dropdown:'רשימה נפתחת' };
+
+  let extra = '';
+  if (['multiple','dropdown'].includes(q.type)) {
+    extra = `
+      <div class="options-list" id="opts_${q.id}">
+        ${q.options.map((o,i) => `
+          <div class="option-row">
+            <input type="text" placeholder="אפשרות ${i+1}" value="${esc(o)}"
+              onchange="updateOption('${q.id}',${i},this.value)" />
+            <button class="btn-icon" onclick="removeOption('${q.id}',${i})"><i class="fas fa-xmark"></i></button>
+          </div>`).join('')}
+      </div>
+      <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="addOption('${q.id}')">
+        <i class="fas fa-plus"></i> הוסף אפשרות
+      </button>`;
+  }
+
+  item.innerHTML = `
+    <div class="q-header">
+      <div class="q-number">${idx+1}</div>
+      <span class="q-type-badge">${typeLabel[q.type]||q.type}</span>
+      <label class="checkbox-group" style="margin-right:auto">
+        <input type="checkbox" ${q.required?'checked':''} onchange="setRequired('${q.id}',this.checked)" />
+        <span class="custom-check-box"></span>
+        <span style="font-size:.82rem;font-weight:700;color:var(--mid)">חובה</span>
+      </label>
+      <div class="q-actions">
+        <button class="btn btn-danger btn-sm" onclick="removeQuestion('${q.id}')"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>
+    <div class="field-group">
+      <label>טקסט השאלה</label>
+      <input type="text" placeholder="הזן את השאלה..." value="${esc(q.label)}"
+        onchange="updateQLabel('${q.id}',this.value)" />
+    </div>
+    ${extra}`;
+  list.appendChild(item);
+}
+
+function updateQLabel(qid, val)      { qRef(qid).label = val; }
+function setRequired(qid, val)       { qRef(qid).required = val; }
+function updateOption(qid, idx, val) { qRef(qid).options[idx] = val; }
+function removeOption(qid, idx) { const q=qRef(qid); q.options.splice(idx,1); rebuildOptions(q); }
+function addOption(qid) { const q=qRef(qid); q.options.push('אפשרות '+(q.options.length+1)); rebuildOptions(q); }
+function rebuildOptions(q) {
+  const c = document.getElementById('opts_'+q.id);
+  if (!c) return;
+  c.innerHTML = q.options.map((o,i) => `
+    <div class="option-row">
+      <input type="text" placeholder="אפשרות ${i+1}" value="${esc(o)}"
+        onchange="updateOption('${q.id}',${i},this.value)" />
+      <button class="btn-icon" onclick="removeOption('${q.id}',${i})"><i class="fas fa-xmark"></i></button>
+    </div>`).join('');
+}
+function removeQuestion(qid) {
+  window._builderForm.questions = window._builderForm.questions.filter(q => q.id !== qid);
+  document.getElementById('qitem_'+qid)?.remove();
+  document.querySelectorAll('.q-number').forEach((el,i) => el.textContent = i+1);
+}
+function qRef(qid) { return window._builderForm.questions.find(q => q.id === qid); }
+
+/** Save form to Google Sheets */
+async function saveFormToSheets(formId) {
+  const title = document.getElementById('bTitle').value.trim();
+  if (!title) { toast('⚠️ נא להוסיף כותרת לטופס'); return; }
+
+  const saveBtn = document.getElementById('saveBtn');
+  if (saveBtn) { saveBtn.disabled = true; saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> שומר...'; }
+
+  const f = window._builderForm;
+  f.id = formId; f.title = title;
+  f.description     = document.getElementById('bDesc').value.trim();
+  f.eventMode       = document.getElementById('bEventMode').checked;
+  f.maxParticipants = parseInt(document.getElementById('bMaxP')?.value) || 0;
+
+  try {
+    await apiPost({ action: 'saveForm', form: f });
+    state.forms[formId] = f;
+    cacheSave(state.forms);
+    toast('✅ הטופס נשמר בהצלחה!');
+    showPage('admin');
+  } catch (err) {
+    toast('❌ שגיאה בשמירה: ' + err.message);
+    if (saveBtn) { saveBtn.disabled = false; saveBtn.innerHTML = '<i class="fas fa-floppy-disk"></i> שמור טופס'; }
+  }
+}
+
+/* ==============================================================
+   FILL FORM PAGE
+   ============================================================== */
+function pageFill(formId) {
+  location.hash = `fill/${formId}`;
+  const form = state.forms[formId];
+  const wrap = div('page'), c = div('container');
+  wrap.appendChild(c);
+
+  if (!form) {
+    c.innerHTML = `
+      <div class="empty-state">
+        <span class="empty-icon">🔍</span>
+        <h3>הטופס לא נמצא</h3>
+        <p>ייתכן שהקישור שגוי או שהטופס נמחק.</p>
+      </div>`;
+    return wrap;
+  }
+
+  if (form.closed) {
+    c.innerHTML = `
+      <div class="reg-full-banner">
+        <span class="banner-icon">🔒</span>
+        <h2>ההרשמה סגורה</h2>
+        <p>המארגן סגר את הרישום.</p>
+      </div>`;
+    return wrap;
+  }
+
+  c.innerHTML = `
+    <div class="form-fill-header">
+      <h1>${esc(form.title)}</h1>
+      ${form.description ? `<p>${esc(form.description)}</p>` : ''}
+    </div>`;
+
+  const pWrap = div('');
+  pWrap.innerHTML = `
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+    </div>
+    <div class="progress-text" id="progressText">0 / ${form.questions.length} שאלות</div>`;
+  c.appendChild(pWrap);
+
+  const formCard = div('card'); formCard.id = 'formCard';
+  window._fillAnswers = {};
+  window._fillForm    = form;
+
+  form.questions.forEach((q, i) => {
+    const qDiv = div('fill-question');
+    qDiv.innerHTML = `
+      <div class="q-label">
+        <span style="color:var(--orange);font-weight:900;min-width:24px">${i+1}.</span>
+        ${esc(q.label)}
+        ${q.required ? '<span class="q-req">*</span>' : ''}
+      </div>`;
+    qDiv.appendChild(buildFillInput(q));
+    formCard.appendChild(qDiv);
+  });
+
+  const sa = div(''); sa.id = 'submitArea'; sa.style.cssText = 'margin-top:28px;text-align:center';
+  sa.innerHTML = `
+    <button class="btn btn-primary" id="submitBtn" onclick="submitForm('${formId}')"
+      style="width:100%;max-width:320px;padding:14px 28px;font-size:1.05rem">
+      <i class="fas fa-paper-plane"></i> שלח תשובות
+    </button>`;
+  formCard.appendChild(sa);
+  c.appendChild(formCard);
+  setTimeout(updateProgress, 100);
+  return wrap;
+}
+
+function buildFillInput(q) {
+  const wrap = div(''); wrap.id = `fill_${q.id}`;
+
+  if (q.type === 'text') {
+    wrap.innerHTML = `<input type="text" class="text-input" placeholder="תשובתך..."
+      oninput="setAnswer('${q.id}',this.value);updateProgress()" />`;
+  } else if (q.type === 'paragraph') {
+    wrap.innerHTML = `<textarea class="textarea-input" placeholder="תשובתך..."
+      oninput="setAnswer('${q.id}',this.value);updateProgress()"></textarea>`;
+  } else if (q.type === 'multiple') {
+    const opts = div('radio-options');
+    q.options.forEach(opt => {
+      const btn = div('radio-option');
+      btn.innerHTML = `<input type="radio" /><div class="custom-radio"></div><span>${esc(opt)}</span>`;
+      btn.onclick = () => { opts.querySelectorAll('.radio-option').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); setAnswer(q.id,opt); updateProgress(); };
+      opts.appendChild(btn);
+    });
+    wrap.appendChild(opts);
+  } else if (q.type === 'yesno') {
+    const row = div('yesno-options');
+    const yes = div('yesno-btn yes'), no = div('yesno-btn no');
+    yes.innerHTML = `<span class="yn-icon">✅</span><span>כן</span>`;
+    no.innerHTML  = `<span class="yn-icon">❌</span><span>לא</span>`;
+    yes.onclick = () => { [yes,no].forEach(b=>b.classList.remove('selected')); yes.classList.add('selected'); setAnswer(q.id,'כן'); updateProgress(); };
+    no.onclick  = () => { [yes,no].forEach(b=>b.classList.remove('selected')); no.classList.add('selected');  setAnswer(q.id,'לא'); updateProgress(); };
+    row.appendChild(yes); row.appendChild(no); wrap.appendChild(row);
+  } else if (q.type === 'dropdown') {
+    const sel = document.createElement('select'); sel.className = 'select-input';
+    sel.innerHTML = `<option value="">-- בחר --</option>` +
+      q.options.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('');
+    sel.onchange = () => { setAnswer(q.id, sel.value); updateProgress(); };
+    wrap.appendChild(sel);
+  }
+  return wrap;
+}
+
+function setAnswer(qid, val) { window._fillAnswers[qid] = val; }
+function updateProgress() {
+  const form = window._fillForm, answers = window._fillAnswers;
+  const answered = form.questions.filter(q => answers[q.id] && String(answers[q.id]).trim()).length;
+  const pct = form.questions.length ? Math.round(answered/form.questions.length*100) : 0;
+  const fill = document.getElementById('progressFill'), text = document.getElementById('progressText');
+  if (fill) fill.style.width = pct+'%';
+  if (text) text.textContent = `${answered} / ${form.questions.length} שאלות`;
+}
+
+/* ==============================================================
+   SUBMIT RESPONSE → Google Sheets
+   ============================================================== */
+async function submitForm(formId) {
+  const form = window._fillForm, answers = window._fillAnswers;
+
+  // Validate required
+  const missing = form.questions.filter(q => q.required && (!answers[q.id] || !String(answers[q.id]).trim()));
+  if (missing.length) { toast(`⚠️ יש ${missing.length} שאלות חובה שלא נענו`); return; }
+
+  // Show loading
+  const sa = document.getElementById('submitArea');
+  if (sa) sa.innerHTML = `
+    <div class="submit-loading">
+      <div class="spinner"></div>
+      <p>שולח תשובות ל-Google Sheets...</p>
+    </div>`;
+
+  // Build labeled answers
+  const labeledAnswers = {};
+  form.questions.forEach(q => { labeledAnswers[q.label] = answers[q.id] || ''; });
+
+  try {
+    await apiPost({
+      action:    'submitResponse',
+      formId,
+      timestamp: new Date().toLocaleString('he-IL'),
+      answers:   labeledAnswers
+    });
+    showThankyou();
+  } catch (err) {
+    console.error(err);
+    if (sa) sa.innerHTML = `
+      <div class="error-banner" style="text-align:right">
+        <div class="err-icon">❌</div>
+        <div>
+          <h4>שגיאה בשמירת התשובות</h4>
+          <p>${esc(err.message || 'אירעה שגיאה. נסה שוב.')}</p>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="submitForm('${formId}')"
+        style="width:100%;max-width:320px;padding:14px 28px;font-size:1.05rem">
+        <i class="fas fa-rotate-right"></i> נסה שוב
+      </button>`;
+    toast('❌ שגיאה בשמירה — נסה שוב');
+  }
+}
+
+function showThankyou() {
+  location.hash = '';
+  document.getElementById('app').innerHTML = `
+    <div class="page">
+      <div class="container">
+        <div class="thankyou-screen">
+          <span class="big-check">🎉</span>
+          <h1 style="font-size:2.2rem;font-weight:900;margin-bottom:12px">תודה רבה!</h1>
+          <p style="color:var(--mid);font-size:1.05rem;margin-bottom:32px">תשובותך נשמרו ב-Google Sheets 💚</p>
+          <button class="btn btn-primary" onclick="showPage('home')">
+            <i class="fas fa-home"></i> חזרה לדף הבית
+          </button>
+        </div>
+      </div>
+    </div>`;
+  launchConfetti();
+}
+
+/* ==============================================================
+   ADMIN ACTIONS
+   ============================================================== */
+function requireAdmin(cb) {
+  if (state.adminAuth) { cb(); return; }
+  const overlay = div('modal-overlay');
+  overlay.innerHTML = `
+    <div class="modal">
+      <div style="font-size:3rem;text-align:center;margin-bottom:12px">🔐</div>
+      <h3 style="text-align:center;margin-bottom:20px">כניסה לניהול</h3>
+      <div class="field-group">
+        <label>סיסמת מנהל</label>
+        <input type="password" id="adminPw" placeholder="הזן סיסמא..."
+          onkeydown="if(event.key==='Enter')_adminLogin()" />
+      </div>
+      <div style="margin-top:8px;font-size:.8rem;color:var(--mid)">סיסמת ברירת מחדל: admin123</div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="document.querySelector('.modal-overlay').remove()">ביטול</button>
+        <button class="btn btn-primary" onclick="_adminLogin()">
+          <i class="fas fa-right-to-bracket"></i> כניסה
+        </button>
+      </div>
+    </div>`;
+  overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
+  document.body.appendChild(overlay);
+  window._adminLoginCb = cb;
+  setTimeout(() => document.getElementById('adminPw')?.focus(), 100);
+}
+
+function _adminLogin() {
+  const pw = document.getElementById('adminPw')?.value;
+  if (pw === ADMIN_PASSWORD) {
+    state.adminAuth = true;
+    document.querySelector('.modal-overlay')?.remove();
+    toast('✅ כניסה בוצעה!');
+    window._adminLoginCb?.();
+    window._adminLoginCb = null;
+  } else {
+    toast('❌ סיסמא שגויה');
+    const el = document.getElementById('adminPw');
+    if (el) { el.value = ''; el.focus(); }
+  }
+}
+
+function adminLogout() { state.adminAuth = false; toast('👋 יצאת'); showPage('home'); }
+
+async function adminToggleClose(formId) {
+  const f = state.forms[formId];
+  if (!f) return;
+  f.closed = !f.closed;
+  try {
+    await apiPost({ action: 'saveForm', form: f });
+    cacheSave(state.forms);
+    showPage('admin');
+  } catch (err) {
+    toast('❌ שגיאה: ' + err.message);
+    f.closed = !f.closed; // revert
+  }
+}
+
+async function adminDeleteForm(formId) {
+  if (!confirm('למחוק את הטופס ואת כל תשובותיו ב-Sheets?')) return;
+  try {
+    await apiPost({ action: 'deleteForm', formId });
+    delete state.forms[formId];
+    cacheSave(state.forms);
+    toast('🗑️ נמחק');
+    showPage('admin');
+  } catch (err) {
+    toast('❌ שגיאה: ' + err.message);
+  }
+}
+
+function copyLink(formId) {
+  const input = document.getElementById('link_'+formId);
+  if (input) navigator.clipboard.writeText(input.value).then(() => toast('📋 הקישור הועתק!'));
+}
+
+/* ==============================================================
+   CONFETTI + TOAST + UTILS
+   ============================================================== */
+function launchConfetti() {
+  const wrapper = document.getElementById('confettiWrapper');
+  const colors = ['#FF6B35','#FFD166','#FF85A1','#FF8C69','#46c878','#7eb8ff'];
+  for (let i=0;i<80;i++) {
+    const p = document.createElement('div'); p.className = 'confetti-piece';
+    p.style.cssText = `left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*.8}s;transform:rotate(${Math.random()*360}deg);width:${6+Math.random()*10}px;height:${8+Math.random()*14}px;border-radius:${Math.random()>.5?'50%':'2px'}`;
+    wrapper.appendChild(p);
+  }
+  setTimeout(() => wrapper.innerHTML = '', 4000);
+}
+
+function toast(msg) {
+  document.querySelector('.toast')?.remove();
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+function div(cls) { const el = document.createElement('div'); if (cls) el.className = cls; return el; }
+function uid()    { return Math.random().toString(36).slice(2,10) + Date.now().toString(36); }
+function esc(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+</script>
+</body>
+</html>
