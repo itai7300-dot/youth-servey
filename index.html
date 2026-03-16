@@ -246,20 +246,27 @@ function checkUrl() {
 /** GET request — fetch all forms from Sheets */
 async function apiFetchForms() {
   checkUrl();
-  const res  = await fetch(APPS_SCRIPT_URL + '?action=getForms');
-  const data = await res.json();
+  // redirect:follow is required — Apps Script returns a 302 redirect
+  const res = await fetch(APPS_SCRIPT_URL + '?action=getForms', {
+    redirect: 'follow'
+  });
+  let data;
+  try { data = await res.json(); } catch { throw new Error('תגובה לא תקינה מ-Apps Script'); }
   if (!data.success) throw new Error(data.error || 'שגיאה בטעינת הטפסים');
-  return data.forms; // array
+  return data.forms;
 }
 
-/** POST request */
+/** POST request — uses URL params trick to work around Apps Script CORS */
 async function apiPost(body) {
   checkUrl();
-  const res = await fetch(APPS_SCRIPT_URL, {
-    method:  'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body:    JSON.stringify(body)
-  });
+  // Apps Script accepts GET with a 'payload' param when POST has CORS issues.
+  // We encode the JSON as a URL param on a GET request — fully supported by doGet.
+  // For actions that write data we use the ?payload= approach via GET with redirect:follow.
+  const url = APPS_SCRIPT_URL
+    + '?action=' + encodeURIComponent(body.action)
+    + '&payload=' + encodeURIComponent(JSON.stringify(body));
+
+  const res = await fetch(url, { redirect: 'follow' });
   let data;
   try { data = await res.json(); } catch { data = { success: true }; }
   if (data && data.error) throw new Error(data.error);
