@@ -182,6 +182,18 @@
     /* Notice */
     .url-notice{background:rgba(255,209,102,.18);border:2px solid rgba(255,209,102,.5);border-radius:12px;padding:14px 18px;font-size:.85rem;color:#7a5c00;margin-bottom:24px;display:flex;gap:10px;align-items:flex-start}
     .url-notice i{margin-top:2px;flex-shrink:0;color:#e09000}
+
+    /* ── Skip Logic ── */
+    .skip-logic-section{margin-top:14px;border-top:2px dashed rgba(255,107,53,.18);padding-top:14px}
+    .skip-logic-title{font-size:.82rem;font-weight:800;color:var(--orange);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+    .skip-rule{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:rgba(255,209,102,.1);border:1.5px solid rgba(255,209,102,.35);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+    .skip-rule select{border:1.5px solid rgba(255,107,53,.2);border-radius:8px;padding:6px 10px;font-family:'Heebo',sans-serif;font-size:.83rem;direction:rtl;background:#fff;color:var(--dark)}
+    .skip-rule .arrow{color:var(--orange);font-weight:900;font-size:.9rem;white-space:nowrap}
+    .skip-rule .btn-icon{width:26px;height:26px;border-radius:50%;border:none;background:rgba(220,50,50,.1);color:#e05050;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.75rem;transition:var(--transition);flex-shrink:0}
+    .skip-rule .btn-icon:hover{background:#e05050;color:#fff}
+    .add-skip-btn{font-size:.8rem;padding:5px 12px;margin-top:4px}
+    .fill-question{transition:all .35s cubic-bezier(0.4,0,0.2,1)}
+    .fill-question.q-hidden{display:none}
     @media(max-width:540px){.topnav{padding:12px 16px}.page{padding:24px 0 60px}.card{padding:20px}.hero{padding:40px 16px 28px}.stats-row{grid-template-columns:1fr 1fr}}
   </style>
 </head>
@@ -210,7 +222,7 @@
    ── https://script.google.com/macros/s/AKfycbzc5xT72kspEIaZz6U5myTThOyNxl5tN0jugQCpnpK4kuJZjDV6WXx_S4ymMrskKHF4/exec ──────────────────────────
    After deploying apps-script.gs as a Web App, paste the URL:
    ============================================================== */
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby5hruopConUhUeVkNd3lI7ayoxtroGPfNc8Q16XgaaesruGhQICbRp1E8_OevC_Y36/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzc5xT72kspEIaZz6U5myTThOyNxl5tN0jugQCpnpK4kuJZjDV6WXx_S4ymMrskKHF4/exec';
 
 /* ==============================================================
    CONFIG
@@ -246,27 +258,20 @@ function checkUrl() {
 /** GET request — fetch all forms from Sheets */
 async function apiFetchForms() {
   checkUrl();
-  // redirect:follow is required — Apps Script returns a 302 redirect
-  const res = await fetch(APPS_SCRIPT_URL + '?action=getForms', {
-    redirect: 'follow'
-  });
-  let data;
-  try { data = await res.json(); } catch { throw new Error('תגובה לא תקינה מ-Apps Script'); }
+  const res  = await fetch(APPS_SCRIPT_URL + '?action=getForms');
+  const data = await res.json();
   if (!data.success) throw new Error(data.error || 'שגיאה בטעינת הטפסים');
-  return data.forms;
+  return data.forms; // array
 }
 
-/** POST request — uses URL params trick to work around Apps Script CORS */
+/** POST request */
 async function apiPost(body) {
   checkUrl();
-  // Apps Script accepts GET with a 'payload' param when POST has CORS issues.
-  // We encode the JSON as a URL param on a GET request — fully supported by doGet.
-  // For actions that write data we use the ?payload= approach via GET with redirect:follow.
-  const url = APPS_SCRIPT_URL
-    + '?action=' + encodeURIComponent(body.action)
-    + '&payload=' + encodeURIComponent(JSON.stringify(body));
-
-  const res = await fetch(url, { redirect: 'follow' });
+  const res = await fetch(APPS_SCRIPT_URL, {
+    method:  'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body:    JSON.stringify(body)
+  });
   let data;
   try { data = await res.json(); } catch { data = { success: true }; }
   if (data && data.error) throw new Error(data.error);
@@ -613,8 +618,108 @@ function renderQuestion(q, idx) {
       <input type="text" placeholder="הזן את השאלה..." value="${esc(q.label)}"
         onchange="updateQLabel('${q.id}',this.value)" />
     </div>
-    ${extra}`;
+    ${extra}
+    <div class="skip-logic-section" id="skipSection_${q.id}">
+      <div class="skip-logic-title"><i class="fas fa-code-branch"></i> לוגיקת דילוג</div>
+      <div id="skipRules_${q.id}"></div>
+      <button class="btn btn-ghost btn-sm add-skip-btn" onclick="addSkipRule('${q.id}')">
+        <i class="fas fa-plus"></i> הוסף תנאי
+      </button>
+    </div>`;
   list.appendChild(item);
+
+  // Render existing skip rules if any
+  (q.skipRules || []).forEach((rule, ri) => renderSkipRule(q.id, ri, rule));
+}
+
+/* ── Skip Logic Builder ── */
+
+/** Returns option list for a question (for yesno always כן/לא) */
+function getQOptions(q) {
+  if (q.type === 'yesno')   return ['כן', 'לא'];
+  if (q.type === 'multiple' || q.type === 'dropdown') return q.options || [];
+  return []; // text/paragraph — no options to branch on
+}
+
+/** Build the "jump to" options — all questions after this one + "סיום" */
+function jumpTargetOptions(qid) {
+  const questions = window._builderForm.questions;
+  const myIdx     = questions.findIndex(q => q.id === qid);
+  let html = '<option value="end">⛔ סיום הטופס</option>';
+  questions.forEach((q, i) => {
+    if (i > myIdx) {
+      html += `<option value="${q.id}">שאלה ${i+1}${q.label ? ': '+esc(q.label.slice(0,22)) : ''}</option>`;
+    }
+  });
+  return html;
+}
+
+/** Render one skip rule row inside the builder */
+function renderSkipRule(qid, ruleIdx, rule) {
+  const q        = qRef(qid);
+  const options  = getQOptions(q);
+  const rulesDiv = document.getElementById('skipRules_' + qid);
+  if (!rulesDiv) return;
+
+  // Can only add skip logic on answerable questions with defined options
+  if (!['yesno','multiple','dropdown'].includes(q.type)) {
+    rulesDiv.innerHTML = '<div style="font-size:.8rem;color:var(--mid);padding:4px 0">תנאים זמינים רק לשאלות עם אפשרויות (כן/לא, בחירה מרובה, רשימה)</div>';
+    return;
+  }
+
+  const ruleEl = document.createElement('div');
+  ruleEl.className = 'skip-rule';
+  ruleEl.id = `skipRule_${qid}_${ruleIdx}`;
+  ruleEl.innerHTML = `
+    <span style="font-size:.82rem;font-weight:700;color:var(--mid)">אם בחרו</span>
+    <select onchange="updateSkipRule('${qid}',${ruleIdx},'answer',this.value)">
+      ${options.map(o => `<option value="${esc(o)}" ${rule && rule.answer===o?'selected':''}>${esc(o)}</option>`).join('')}
+    </select>
+    <span class="arrow">← עבור ל</span>
+    <select onchange="updateSkipRule('${qid}',${ruleIdx},'jumpTo',this.value)">
+      ${jumpTargetOptions(qid).replace(
+        `value="${rule && rule.jumpTo ? rule.jumpTo : ''}"`,
+        `value="${rule && rule.jumpTo ? rule.jumpTo : ''}" selected`
+      )}
+    </select>
+    <button class="btn-icon" onclick="removeSkipRule('${qid}',${ruleIdx})" title="הסר">
+      <i class="fas fa-xmark"></i>
+    </button>`;
+
+  // Fix selected on jumpTo select after insertion
+  rulesDiv.appendChild(ruleEl);
+  const selects = ruleEl.querySelectorAll('select');
+  if (rule && rule.jumpTo && selects[1]) selects[1].value = rule.jumpTo;
+}
+
+function addSkipRule(qid) {
+  const q = qRef(qid);
+  if (!q) return;
+  if (!['yesno','multiple','dropdown'].includes(q.type)) {
+    toast('⚠️ תנאים זמינים רק לשאלות כן/לא, בחירה מרובה ורשימה נפתחת');
+    return;
+  }
+  if (!q.skipRules) q.skipRules = [];
+  const options = getQOptions(q);
+  const newRule = { answer: options[0] || '', jumpTo: 'end' };
+  q.skipRules.push(newRule);
+  renderSkipRule(qid, q.skipRules.length - 1, newRule);
+}
+
+function updateSkipRule(qid, ruleIdx, field, value) {
+  const q = qRef(qid);
+  if (!q || !q.skipRules || !q.skipRules[ruleIdx]) return;
+  q.skipRules[ruleIdx][field] = value;
+}
+
+function removeSkipRule(qid, ruleIdx) {
+  const q = qRef(qid);
+  if (!q || !q.skipRules) return;
+  q.skipRules.splice(ruleIdx, 1);
+  // Re-render all rules for this question
+  const rulesDiv = document.getElementById('skipRules_' + qid);
+  if (rulesDiv) rulesDiv.innerHTML = '';
+  q.skipRules.forEach((rule, ri) => renderSkipRule(qid, ri, rule));
 }
 
 function updateQLabel(qid, val)      { qRef(qid).label = val; }
@@ -712,8 +817,9 @@ function pageFill(formId) {
   window._fillAnswers = {};
   window._fillForm    = form;
 
+  // Render ALL questions; hide/show based on skip logic
   form.questions.forEach((q, i) => {
-    const qDiv = div('fill-question');
+    const qDiv = div('fill-question'); qDiv.id = `fq_${q.id}`;
     qDiv.innerHTML = `
       <div class="q-label">
         <span style="color:var(--orange);font-weight:900;min-width:24px">${i+1}.</span>
@@ -750,7 +856,11 @@ function buildFillInput(q) {
     q.options.forEach(opt => {
       const btn = div('radio-option');
       btn.innerHTML = `<input type="radio" /><div class="custom-radio"></div><span>${esc(opt)}</span>`;
-      btn.onclick = () => { opts.querySelectorAll('.radio-option').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); setAnswer(q.id,opt); updateProgress(); };
+      btn.onclick = () => {
+        opts.querySelectorAll('.radio-option').forEach(b=>b.classList.remove('selected'));
+        btn.classList.add('selected');
+        setAnswer(q.id, opt); // setAnswer now handles skip logic + progress
+      };
       opts.appendChild(btn);
     });
     wrap.appendChild(opts);
@@ -759,27 +869,100 @@ function buildFillInput(q) {
     const yes = div('yesno-btn yes'), no = div('yesno-btn no');
     yes.innerHTML = `<span class="yn-icon">✅</span><span>כן</span>`;
     no.innerHTML  = `<span class="yn-icon">❌</span><span>לא</span>`;
-    yes.onclick = () => { [yes,no].forEach(b=>b.classList.remove('selected')); yes.classList.add('selected'); setAnswer(q.id,'כן'); updateProgress(); };
-    no.onclick  = () => { [yes,no].forEach(b=>b.classList.remove('selected')); no.classList.add('selected');  setAnswer(q.id,'לא'); updateProgress(); };
+    yes.onclick = () => { [yes,no].forEach(b=>b.classList.remove('selected')); yes.classList.add('selected'); setAnswer(q.id,'כן'); };
+    no.onclick  = () => { [yes,no].forEach(b=>b.classList.remove('selected')); no.classList.add('selected');  setAnswer(q.id,'לא'); };
     row.appendChild(yes); row.appendChild(no); wrap.appendChild(row);
   } else if (q.type === 'dropdown') {
     const sel = document.createElement('select'); sel.className = 'select-input';
     sel.innerHTML = `<option value="">-- בחר --</option>` +
       q.options.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('');
-    sel.onchange = () => { setAnswer(q.id, sel.value); updateProgress(); };
+    sel.onchange = () => { setAnswer(q.id, sel.value); };
     wrap.appendChild(sel);
   }
   return wrap;
 }
 
-function setAnswer(qid, val) { window._fillAnswers[qid] = val; }
+function setAnswer(qid, val) {
+  window._fillAnswers[qid] = val;
+  applySkipLogic(qid, val);
+  updateProgress();
+}
+
+/**
+ * applySkipLogic — after answering qid with val,
+ * figure out which questions to show/hide.
+ *
+ * Algorithm:
+ * 1. Walk questions in order.
+ * 2. Start with all questions visible.
+ * 3. For each answered question that has skipRules,
+ *    find the matching rule and mark all questions
+ *    between "this question + 1" and "jumpTo - 1" as hidden.
+ *    If jumpTo === 'end', hide everything after this question.
+ */
+function applySkipLogic(changedQid, changedVal) {
+  const form      = window._fillForm;
+  const questions = form.questions;
+  const answers   = window._fillAnswers;
+
+  // Build a visibility map: true = show, false = hide
+  const visible = {};
+  questions.forEach(q => { visible[q.id] = true; });
+
+  // Walk each question and apply its skip rules if it has been answered
+  questions.forEach((q, idx) => {
+    const rules = q.skipRules;
+    if (!rules || !rules.length) return;
+    const ans = answers[q.id];
+    if (!ans) return;
+
+    // Find first matching rule
+    const matched = rules.find(r => r.answer === ans);
+    if (!matched) return;
+
+    const jumpTo = matched.jumpTo; // question id or 'end'
+
+    if (jumpTo === 'end') {
+      // Hide everything after this question
+      for (let j = idx + 1; j < questions.length; j++) {
+        visible[questions[j].id] = false;
+      }
+    } else {
+      // Hide questions between idx+1 and the jumpTo target (exclusive)
+      const targetIdx = questions.findIndex(q2 => q2.id === jumpTo);
+      for (let j = idx + 1; j < targetIdx; j++) {
+        if (j >= 0 && j < questions.length) visible[questions[j].id] = false;
+      }
+    }
+  });
+
+  // Apply visibility to DOM and clear answers for hidden questions
+  questions.forEach(q => {
+    const el = document.getElementById('fq_' + q.id);
+    if (!el) return;
+    if (visible[q.id]) {
+      el.classList.remove('q-hidden');
+    } else {
+      el.classList.add('q-hidden');
+      // Clear the answer so hidden questions don't block "required" validation
+      delete window._fillAnswers[q.id];
+    }
+  });
+}
+
 function updateProgress() {
-  const form = window._fillForm, answers = window._fillAnswers;
-  const answered = form.questions.filter(q => answers[q.id] && String(answers[q.id]).trim()).length;
-  const pct = form.questions.length ? Math.round(answered/form.questions.length*100) : 0;
+  const form    = window._fillForm;
+  const answers = window._fillAnswers;
+  // Only count visible questions toward progress
+  const visibleQs = form.questions.filter(q => {
+    const el = document.getElementById('fq_' + q.id);
+    return el && !el.classList.contains('q-hidden');
+  });
+  const answered = visibleQs.filter(q => answers[q.id] && String(answers[q.id]).trim()).length;
+  const pct = visibleQs.length ? Math.round(answered / visibleQs.length * 100) : 0;
   const fill = document.getElementById('progressFill'), text = document.getElementById('progressText');
-  if (fill) fill.style.width = pct+'%';
-  if (text) text.textContent = `${answered} / ${form.questions.length} שאלות`;
+  if (fill) fill.style.width = pct + '%';
+  if (text) text.textContent = `${answered} / ${visibleQs.length} שאלות`;
 }
 
 /* ==============================================================
@@ -788,8 +971,12 @@ function updateProgress() {
 async function submitForm(formId) {
   const form = window._fillForm, answers = window._fillAnswers;
 
-  // Validate required
-  const missing = form.questions.filter(q => q.required && (!answers[q.id] || !String(answers[q.id]).trim()));
+  // Only validate visible questions
+  const visibleQs = form.questions.filter(q => {
+    const el = document.getElementById('fq_' + q.id);
+    return el && !el.classList.contains('q-hidden');
+  });
+  const missing = visibleQs.filter(q => q.required && (!answers[q.id] || !String(answers[q.id]).trim()));
   if (missing.length) { toast(`⚠️ יש ${missing.length} שאלות חובה שלא נענו`); return; }
 
   // Show loading
