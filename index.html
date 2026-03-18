@@ -584,8 +584,14 @@ function pageBuilder(editId) {
     </button>`;
   c.appendChild(sr);
 
-  formData.questions.forEach((q, i) => renderQuestion(q, i));
   window._builderForm = formData;
+
+  // חשוב: קודם מחזירים את wrap כדי שיצורף ל-DOM,
+  // ורק אחרי זה renderQuestion מוצא את questionsList
+  requestAnimationFrame(() => {
+    formData.questions.forEach((q, i) => renderQuestion(q, i));
+  });
+
   return wrap;
 }
 
