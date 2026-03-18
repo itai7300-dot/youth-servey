@@ -301,8 +301,6 @@ async function loadForms() {
 async function showPage(page, payload) {
   const app = document.getElementById('app');
 
-  // If forms haven't been loaded yet — show spinner and load first.
-  // This applies to ALL pages, including 'builder' when editing an existing form.
   if (state.loading) {
     app.innerHTML = `
       <div class="page">
@@ -317,7 +315,17 @@ async function showPage(page, payload) {
   }
 
   app.innerHTML = '';
-  app.appendChild(buildPage(page, payload));
+  const result = buildPage(page, payload);
+
+  // buildPage יכול להחזיר { el, afterMount } או אלמנט רגיל
+  const el          = result.el          || result;
+  const afterMount  = result.afterMount  || null;
+
+  app.appendChild(el);
+
+  // afterMount רץ רק אחרי שהאלמנט כבר ב-DOM
+  if (afterMount) afterMount();
+
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -586,13 +594,13 @@ function pageBuilder(editId) {
 
   window._builderForm = formData;
 
-  // חשוב: קודם מחזירים את wrap כדי שיצורף ל-DOM,
-  // ורק אחרי זה renderQuestion מוצא את questionsList
-  requestAnimationFrame(() => {
-    formData.questions.forEach((q, i) => renderQuestion(q, i));
-  });
-
-  return wrap;
+  // מחזירים את האלמנט + פונקציה שתרוץ אחרי שהוא מחובר ל-DOM
+  return {
+    el: wrap,
+    afterMount: () => {
+      formData.questions.forEach((q, i) => renderQuestion(q, i));
+    }
+  };
 }
 
 function toggleEventFields() {
